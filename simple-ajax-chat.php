@@ -369,8 +369,9 @@ function sac_addData($sac_user_name, $sac_user_text, $sac_user_url) {
 		'name' => stripslashes($sac_user_name), 
 		'text' => stripslashes($sac_user_text), 
 		'url'  => $sac_user_url, 
-		'ip'   => $ip
-		
+		'ip'   => $ip,
+		'user_id' => get_current_user_id()
+
 	), array('%s', '%s', '%s', '%s', '%s'));
 	
 }
