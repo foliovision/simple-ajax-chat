@@ -140,10 +140,10 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 			
 			sac_addData($sac_name, $sac_chat, $sac_url);
 			sac_deleteOld();
-			
+
 			setcookie('sacUserName', $sac_name, $sac_time, '/', $simple_ajax_chat_domain, false, true);
 			setcookie('sacUrl',      $sac_url,  $sac_time, '/', $simple_ajax_chat_domain, false, true);
-				
+
 		} else {
 			
 			wp_die($sac_error_message, 200);
@@ -162,7 +162,7 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 			
 			sac_addData($sac_user_name, $sac_user_text, $sac_user_url);
 			sac_deleteOld();
-			
+
 		} else {
 			
 			wp_die($sac_error_message, 200);
@@ -172,5 +172,7 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 	}
 	
 }
+
+sac_getData(0);
 
 exit();
