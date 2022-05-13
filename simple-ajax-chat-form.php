@@ -32,11 +32,11 @@ function sac_is_session_started() {
 	
 }
 
-function sac_get_logged_class($current_user_id) {
+function sac_get_logged_class($user_id) {
 	
 	$class = '';
 	
-	$online = sac_get_logged_users($current_user_id);
+	$online = sac_get_logged_users($user_id);
 
 	$class = $online ? ' sac-online' : '';
 	
@@ -101,8 +101,9 @@ function simple_ajax_chat() {
 				$chat_id   = sanitize_text_field($r->id);
 				$chat_url  = sanitize_text_field($r->url);
 				$chat_name = sanitize_text_field($r->name);
-				
-				$online_class = sac_get_logged_class($current_user->ID);
+				$user_id = intval($r->user_id);
+
+				$online_class = sac_get_logged_class($user_id);
 				
 				$name_class = preg_replace('/[\s\.\#\(\)]+/', '-', $chat_name);
 				
