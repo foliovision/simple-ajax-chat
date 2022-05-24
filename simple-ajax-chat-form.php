@@ -2,14 +2,20 @@
 
 if (!defined('ABSPATH')) exit;
 
-if (sac_is_session_started() === false) {
-	
-	$simple_ajax_chat_domain = sanitize_text_field($_SERVER['HTTP_HOST']);
-	
-	session_set_cookie_params('21600', '/', $simple_ajax_chat_domain, false, true);
-	
-	session_start(array('read_and_close' => true));
-	
+add_action('init', 'sac_start_session', 1 );
+
+function sac_start_session() {
+
+	if ( !headers_sent() && !sac_is_session_started() ) {
+
+		$simple_ajax_chat_domain = sanitize_text_field($_SERVER['HTTP_HOST']);
+
+		session_set_cookie_params('21600', '/', $simple_ajax_chat_domain, false, true);
+
+		session_start(array('read_and_close' => true));
+
+	}
+
 }
 
 function sac_is_session_started() {
