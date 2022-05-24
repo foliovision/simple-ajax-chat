@@ -1,10 +1,59 @@
 <?php // Simple Ajax Chat > Process Chats
 
-define('WP_USE_THEMES', false);
-require(dirname(dirname(dirname(dirname(__FILE__)))) .'/wp-config.php');
-require(ABSPATH .'/wp-load.php');
+// With this the wp-load.php takes 20 ms, without it about 900 ms. Of course it largely depends on what/how many plugins you use.
+if( !defined('SHORTINIT') ) {
+	define('SHORTINIT',true);
+}
 
-if (!defined('ABSPATH')) exit;
+define('WP_USE_THEMES', false);
+require('../../../wp-load.php');
+
+// Load the L10n library.
+require_once ABSPATH . WPINC . '/l10n.php';
+require_once ABSPATH . WPINC . '/class-wp-locale.php';
+require_once ABSPATH . WPINC . '/class-wp-locale-switcher.php';
+
+// Including what's necessary
+require_once( ABSPATH . WPINC . '/capabilities.php' );
+require_once( ABSPATH . WPINC . '/class-wp-roles.php' );
+require_once( ABSPATH . WPINC . '/class-wp-role.php' );
+require_once( ABSPATH . WPINC . '/class-wp-user.php' );
+require_once( ABSPATH . WPINC . '/user.php' );
+require_once( ABSPATH . WPINC . '/pluggable.php' );
+require_once( ABSPATH . WPINC . '/formatting.php' );
+require_once( ABSPATH . WPINC . '/link-template.php' );
+require_once( ABSPATH . WPINC . '/shortcodes.php' );
+require_once( ABSPATH . WPINC . '/general-template.php' );
+require_once( ABSPATH . WPINC . '/class-wp-session-tokens.php' );
+require_once( ABSPATH . WPINC . '/class-wp-user-meta-session-tokens.php' );
+require_once( ABSPATH . WPINC . '/meta.php' );
+require_once( ABSPATH . WPINC . '/kses.php' );
+require_once( ABSPATH . WPINC . '/rest-api.php' );
+
+// and of course the WP_HTTP
+require_once( ABSPATH . WPINC . '/http.php' );
+if( file_exists( ABSPATH . WPINC . '/class-wp-http.php' ) ) {
+	require_once( ABSPATH . WPINC . '/class-wp-http.php' );
+} else {
+	require_once( ABSPATH . WPINC . '/class-http.php' );
+}
+require_once( ABSPATH . WPINC . '/class-wp-http-streams.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-curl.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-proxy.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-cookie.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-encoding.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-response.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-requests-response.php' );
+require_once( ABSPATH . WPINC . '/class-wp-http-requests-hooks.php' );
+
+// Without this plugins_url() won't work
+wp_plugin_directory_constants();
+$GLOBALS['wp_plugin_paths'] = array();
+
+// Without this the user login status won't work
+wp_cookie_constants();
+
+require_once(dirname( __FILE__ ) . '/simple-ajax-chat.php');
 
 $sac_die = esc_html__('Please do not load this page directly. Thanks!', 'simple-ajax-chat');
 
@@ -77,9 +126,8 @@ $sac_error_message = esc_html__('WP Plugin SAC: Name and comment required. Pleas
 
 // process chats
 if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
-	
+
 	if ($sac_no_js && $sac_verify) {
-		
 		if ($sac_name && $sac_chat) {
 			
 			$sac_name = apply_filters('sac_process_chat_name', $sac_name);
@@ -92,10 +140,10 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 			
 			sac_addData($sac_name, $sac_chat, $sac_url);
 			sac_deleteOld();
-			
+
 			setcookie('sacUserName', $sac_name, $sac_time, '/', $simple_ajax_chat_domain, false, true);
 			setcookie('sacUrl',      $sac_url,  $sac_time, '/', $simple_ajax_chat_domain, false, true);
-				
+
 		} else {
 			
 			wp_die($sac_error_message, 200);
@@ -114,7 +162,7 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 			
 			sac_addData($sac_user_name, $sac_user_text, $sac_user_url);
 			sac_deleteOld();
-			
+
 		} else {
 			
 			wp_die($sac_error_message, 200);
@@ -124,5 +172,7 @@ if (wp_verify_nonce($sac_nonce, 'sac_nonce')) {
 	}
 	
 }
+
+sac_getData(0);
 
 exit();
