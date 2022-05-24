@@ -32,38 +32,16 @@ function sac_is_session_started() {
 	
 }
 
-function sac_get_logged_class($chat_name) {
-	
-	$chat_name = urldecode($chat_name);
+function sac_get_logged_class($user_id) {
 	
 	$class = '';
 	
-	static $users;
-	
-	if (empty($users)) $users = get_users(array('fields' => array('ID', 'display_name')));
-	
-	if ($users) {
-		
-		foreach ($users as $user) {
-			
-			$online = '';
-			
-			if ($user->display_name === $chat_name) {
-				
-				$online = sac_get_logged_users($user->ID);
-				
-				$class = $online ? ' sac-online' : '';
-				
-			}
-			
-			if (!empty($online)) break;
-			
-		}
-		
-	}
+	$online = sac_get_logged_users($user_id);
+
+	$class = $online ? ' sac-online' : '';
 	
 	return $class;
-	
+
 }
 
 function simple_ajax_chat() {
@@ -123,8 +101,9 @@ function simple_ajax_chat() {
 				$chat_id   = sanitize_text_field($r->id);
 				$chat_url  = sanitize_text_field($r->url);
 				$chat_name = sanitize_text_field($r->name);
-				
-				$online_class = sac_get_logged_class($chat_name);
+				$user_id = intval($r->user_id);
+
+				$online_class = sac_get_logged_class($user_id);
 				
 				$name_class = preg_replace('/[\s\.\#\(\)]+/', '-', $chat_name);
 				

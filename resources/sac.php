@@ -492,11 +492,6 @@ function insertNewContent(liName,liText,lastResponse, liUrl, liId) {
 	
 	insertO.insertBefore(oLi, insertO.<?php echo $child; ?>Child);
 	
-	<?php $request_url = plugins_url() .'/simple-ajax-chat/includes/sac-check-user.php'; ?>
-	jQuery.post('<?php echo $request_url; ?>', 'sac_user=' + encodeURIComponent(liName), function(response){
-		jQuery('.sac-user-' + name_class).addClass('sac-online');
-	});
-	
 	<?php if ($chat_order) : ?>
 	
 	jQuery('#sac-output').animate({ scrollTop: jQuery('#sac-output').prop('scrollHeight') }, 300);

@@ -104,35 +104,38 @@ add_action('admin_init', 'sac_require_wp_version');
 
 // install DB table
 function sac_create_table() {
-	
 	global $wpdb;
-	
+	global $sac_version;
+
 	if (!current_user_can('activate_plugins')) return;
 	
-	if (isset($_GET['activate']) && $_GET['activate'] === 'true') {
-		
+	$saved_version = get_option('sac_version', '1');
+
+	if ( version_compare($saved_version, $sac_version, '!=') ) {
+		update_option('sac_version', $sac_version);
+
 		$table_name  = $wpdb->prefix .'ajax_chat';
-		$check_table = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");
-		
-		if ($check_table !== $table_name) {
-			
-			$charset_collate = $wpdb->get_charset_collate();
-			
-			$sql = "CREATE TABLE ". $table_name ." (
-				id   mediumint(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-				time varchar(200)  NOT NULL DEFAULT '',
-				name varchar(200)  NOT NULL DEFAULT '',
-				text varchar(9999) NOT NULL DEFAULT '',
-				url  varchar(200)  NOT NULL DEFAULT '',
-				ip   varchar(200)  NOT NULL DEFAULT '',
-				PRIMARY KEY (id)
-			) ". $charset_collate .";";
-			
-			require_once(ABSPATH .'wp-admin/includes/upgrade.php');
-			dbDelta($sql);
-			
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE ". $table_name ." (
+			id mediumint(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) UNSIGNED NOT NULL DEFAULT '0',
+			time varchar(200) NOT NULL DEFAULT '',
+			name varchar(200) NOT NULL DEFAULT '',
+			text varchar(9999) NOT NULL DEFAULT '',
+			url varchar(200) NOT NULL DEFAULT '',
+			ip varchar(200) NOT NULL DEFAULT '',
+			PRIMARY KEY  (id),
+			KEY user_id (user_id)
+		) ". $charset_collate .";";
+
+		require_once(ABSPATH .'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+
+		if( isset($_GET['activate']) && $_GET['activate'] === 'true' ) {
 			$wpdb->insert($table_name, array(
-				
+			
 				'time' => current_time('timestamp'), 
 				'name' => esc_html__('The Admin', 'simple-ajax-chat'), 
 				'text' => esc_html__('High five! You&rsquo;ve successfully installed Simple Ajax Chat.', 'simple-ajax-chat'), 
@@ -140,11 +143,10 @@ function sac_create_table() {
 				'ip'   => sac_get_ip_address()
 				
 			), array('%s', '%s', '%s', '%s', '%s'));
-			
 		}
-		
+
 	}
-	
+
 }
 add_action('admin_init', 'sac_create_table');
 
@@ -369,8 +371,9 @@ function sac_addData($sac_user_name, $sac_user_text, $sac_user_url) {
 		'name' => stripslashes($sac_user_name), 
 		'text' => stripslashes($sac_user_text), 
 		'url'  => $sac_user_url, 
-		'ip'   => $ip
-		
+		'ip'   => $ip,
+		'user_id' => get_current_user_id()
+
 	), array('%s', '%s', '%s', '%s', '%s'));
 	
 }
