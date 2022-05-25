@@ -55,6 +55,8 @@ wp_cookie_constants();
 
 require_once(dirname( __FILE__ ) . '/simple-ajax-chat.php');
 
+sac_start_session();
+
 $sac_die = esc_html__('Please do not load this page directly. Thanks!', 'simple-ajax-chat');
 
 if (isset($_COOKIE['PHPSESSID']) && $_COOKIE['PHPSESSID'] !== session_id()) {
